@@ -6,6 +6,7 @@ import ahm.dev.tasktrix.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public void createUser(UserForRegister userForRegister) {
@@ -26,17 +28,20 @@ public class UserServiceImpl implements UserService{
         User user =  User.builder()
                 .username(userForRegister.getUsername())
                 .email(userForRegister.getEmail())
-                .password(userForRegister.getPassword())
+                .password(passwordEncoder.encode(userForRegister.getPassword()))
                 .firstName(userForRegister.getFirstName())
                 .lastName(userForRegister.getLastName())
                 .role(userForRegister.getRole())
+                .isActive(true)
                 .build();
         userRepository.save(user);
     }
 
     @Override
     public User findByUsername(String username) {
-        return null;
+        return userRepository.findByUsername(username).orElseThrow(
+                () -> new UsernameNotFoundException("User not found: " + username)
+        );
     }
 
     @Override

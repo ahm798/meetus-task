@@ -26,7 +26,7 @@ public class JwtServiceImpl implements JwtService {
     @Value("${jwt.expiration}")
     private long EXPIRATION;
     
-    @Value("${jwt.refreshExpiration}")
+    @Value("${jwt.refresh-expiration}")
     private long REFRESH_EXPIRATION;
 
     private Key getSigningKey() {
@@ -65,8 +65,8 @@ public class JwtServiceImpl implements JwtService {
         try {
             Instant now = Instant.now();
             return Jwts.builder()
-                    .setSubject(userDetails.getUsername())
                     .setClaims(claims)
+                    .setSubject(userDetails.getUsername())
                     .setIssuedAt(Date.from(now))
                     .setExpiration(Date.from(now.plusMillis(expiration)))
                     .signWith(getSigningKey(), SignatureAlgorithm.HS256)
@@ -148,30 +148,62 @@ public class JwtServiceImpl implements JwtService {
             throw new RuntimeException("Error parsing JWT token", e);
         }
     }
-
     @Override
     public boolean isTokenValid(String token, UserDetails userDetails) {
         if (token == null || userDetails == null) {
             return false;
         }
-        
+
         try {
             String tokenUsername = extractUsername(token);
             if (tokenUsername == null || !tokenUsername.equals(userDetails.getUsername())) {
                 return false;
             }
-            
+
             Claims claims = extractAllClaims(token);
+            
+            // Check if this is an access token
+            String tokenType = claims.get("type", String.class);
+            if (!"access".equals(tokenType)) {
+                log.debug("Token is not an access token, type: {}", tokenType);
+                return false;
+            }
+            
             return !isTokenExpired(claims);
         } catch (Exception e) {
-            log.debug("Token validation failed for user: {}", 
+            log.debug("Token validation failed for user: {}",
                 userDetails != null ? userDetails.getUsername() : "unknown", e);
             return false;
         }
     }
-    
+
+    @Override
+    public boolean isRefreshTokenValid(String token) {
+        if (token == null) {
+            return false;
+        }
+        try {
+            Claims claims = extractAllClaims(token);
+            
+            // Check if this is a refresh token
+            String tokenType = claims.get("type", String.class);
+            if (!"refresh".equals(tokenType)) {
+                log.debug("Token is not a refresh token, type: {}", tokenType);
+                return false;
+            }
+            
+            return !isTokenExpired(claims);
+        } catch (Exception e) {
+            log.debug("Token validation failed for refresh token", e);
+        }
+        return false;
+    }
+
+
     private boolean isTokenExpired(Claims claims) {
         Date expiration = claims.getExpiration();
         return expiration != null && expiration.before(new Date());
     }
+
+
 }

@@ -9,5 +9,6 @@ public interface JwtService {
     String extractUsername(String token);
     Claims extractAllClaims(String token);
     boolean isTokenValid(String token, UserDetails userDetails);
+    boolean isRefreshTokenValid(String token);
 
 }
