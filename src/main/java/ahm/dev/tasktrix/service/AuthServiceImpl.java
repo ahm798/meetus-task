@@ -5,8 +5,10 @@ import ahm.dev.tasktrix.dto.AuthResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +32,7 @@ public class AuthServiceImpl implements AuthService{
                     )
             );
 
-            UserDetails user = userService.findByUsername(authRequest.getUsername());
+            UserDetails user = (UserDetails) authentication.getPrincipal();
 
             String accessToken = jwtService.generateAccessToken(user);
             String refreshToken = jwtService.generateRefreshToken(user);
@@ -40,11 +42,13 @@ public class AuthServiceImpl implements AuthService{
                     .refreshToken(refreshToken)
                     .expiresIn(jwtexpiration)
                     .build();
-        }
-        catch (Exception e){
+
+        } catch (BadCredentialsException e) {
+            System.err.println("Authentication failed: Invalid username or password for user: " + authRequest.getUsername());
+            throw new BadCredentialsException("Invalid username or password");
+        } catch (AuthenticationException e) {
             System.err.println("Authentication failed: " + e.getMessage());
-            e.printStackTrace();
-            return null;
+            throw e;
         }
     }
 

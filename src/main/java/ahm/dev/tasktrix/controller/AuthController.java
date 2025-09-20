@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -61,9 +62,15 @@ public class AuthController {
                     description = "User login credentials",
                     content = @Content(schema = @Schema(implementation = AuthRequest.class),
                             examples = @ExampleObject(value = "{\"username\":\"john_doe\",\"password\":\"password123\"}")))
-            @RequestBody AuthRequest authRequest) {
-        AuthResponse authResponse = authService.authenticate(authRequest);
-        return authResponse != null ? ResponseEntity.ok(authResponse) : ResponseEntity.badRequest().build();
+            @RequestBody AuthRequest authRequest) {        try {
+            AuthResponse authResponse = authService.authenticate(authRequest);
+            return ResponseEntity.ok(authResponse);
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+
     }
 
     @Operation(summary = "Refresh JWT token", description = "Get new access token using refresh token")
