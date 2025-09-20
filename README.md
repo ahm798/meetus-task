@@ -1,6 +1,6 @@
 # Tasktrix - Task Management REST API
 
-A comprehensive task management REST API built with Spring Boot, featuring JWT authentication, user isolation, and interactive Swagger documentation.
+A comprehensive task management REST API built with Spring Boot, featuring JWT authentication and user isolation.
 
 ## 🚀 Features
 
@@ -18,19 +18,12 @@ A comprehensive task management REST API built with Spring Boot, featuring JWT a
 - **Timestamps** - Automatic creation and update timestamps
 - **Business Logic** - Task completion tracking and status management
 
-### 📚 API Documentation
-- **Swagger UI** - Interactive API documentation and testing
-- **OpenAPI 3.0** - Complete API specification
-- **Request/Response Examples** - Comprehensive examples for all endpoints
-- **Authentication Flow** - Step-by-step JWT usage guide
-
 ## 🛠️ Tech Stack
 
 - **Framework**: Spring Boot 3.5.5
 - **Security**: Spring Security with JWT
 - **Database**: H2 (in-memory for development)
 - **ORM**: JPA/Hibernate
-- **Documentation**: SpringDoc OpenAPI (Swagger)
 - **Build Tool**: Maven
 - **Java Version**: 24
 
@@ -56,13 +49,6 @@ A comprehensive task management REST API built with Spring Boot, featuring JWT a
     <groupId>io.jsonwebtoken</groupId>
     <artifactId>jjwt-api</artifactId>
     <version>0.11.5</version>
-</dependency>
-
-<!-- Swagger Documentation -->
-<dependency>
-    <groupId>org.springdoc</groupId>
-    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-    <version>2.2.0</version>
 </dependency>
 
 <!-- Database -->
@@ -99,8 +85,6 @@ A comprehensive task management REST API built with Spring Boot, featuring JWT a
 
 4. **Access the application**
    - **API Base URL**: `http://localhost:8080`
-   - **Swagger UI**: `http://localhost:8080/swagger-ui/index.html`
-   - **API Docs**: `http://localhost:8080/v3/api-docs`
 
 ## 📖 API Documentation
 
@@ -206,8 +190,7 @@ src/
 │   │   ├── config/                        # Configuration classes
 │   │   │   ├── AuthenticationConfig.java  # Authentication configuration
 │   │   │   ├── PasswordConfig.java        # Password encoder configuration
-│   │   │   ├── SecurityConfig.java        # Spring Security configuration
-│   │   │   └── SwaggerConfig.java         # Swagger/OpenAPI configuration
+│   │   │   └── SecurityConfig.java        # Spring Security configuration
 │   │   ├── controller/                    # REST controllers
 │   │   │   ├── AuthController.java        # Authentication endpoints
 │   │   │   └── TaskController.java        # Task management endpoints
@@ -293,12 +276,6 @@ jwt.refresh-token-expiration=604800000
      -H "Authorization: Bearer YOUR_JWT_TOKEN" \
      -d '{"title": "Test Task", "content": "Test content", "status": "NEW"}'
    ```
-
-### Using Swagger UI
-
-1. Open `http://localhost:8080/swagger-ui/index.html`
-2. Use the "Authorize" button to add your JWT token
-3. Test all endpoints interactively
 
 ## 🛡️ Security Features
 
@@ -390,7 +367,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - Spring Boot Team for the excellent framework
 - Spring Security Team for robust security features
-- SpringDoc team for seamless OpenAPI integration
 - H2 Database for easy development setup
 
 ---
