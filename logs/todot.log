@@ -1,0 +1,37 @@
+2025-09-22 23:48:18 [main] INFO  a.dev.tasktrix.TasktrixApplication - Starting TasktrixApplication using Java 24.0.2 with PID 686231 (/home/ahmed/dev/jv/tasktrix/target/classes started by ahmed in /home/ahmed/dev/jv/tasktrix)
+2025-09-22 23:48:18 [main] INFO  a.dev.tasktrix.TasktrixApplication - No active profile set, falling back to 1 default profile: "default"
+2025-09-22 23:48:18 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-09-22 23:48:18 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-09-22 23:48:18 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 93 ms. Found 2 JPA repository interfaces.
+2025-09-22 23:48:18 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-09-22 23:48:18 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-09-22 23:48:18 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface ahm.dev.tasktrix.repository.TaskRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-09-22 23:48:18 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface ahm.dev.tasktrix.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-09-22 23:48:18 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 5 ms. Found 0 Redis repository interfaces.
+2025-09-22 23:48:19 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-09-22 23:48:19 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-09-22 23:48:19 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.44]
+2025-09-22 23:48:19 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-09-22 23:48:19 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1330 ms
+2025-09-22 23:48:19 [main] ERROR o.s.b.w.e.tomcat.TomcatStarter - Error starting Tomcat context. Exception: org.springframework.beans.factory.UnsatisfiedDependencyException. Message: Error creating bean with name 'jwtAuthenticationFilter' defined in file [/home/ahmed/dev/jv/tasktrix/target/classes/ahm/dev/tasktrix/security/JwtAuthenticationFilter.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'jwtTokenProvider' defined in file [/home/ahmed/dev/jv/tasktrix/target/classes/ahm/dev/tasktrix/security/JwtTokenProvider.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'ahm.dev.tasktrix.config.JwtProperties': Could not bind properties to 'JwtProperties' : prefix=, ignoreInvalidFields=false, ignoreUnknownFields=true
+2025-09-22 23:48:19 [main] INFO  o.a.catalina.core.StandardService - Stopping service [Tomcat]
+2025-09-22 23:48:19 [main] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Unable to start web server
+2025-09-22 23:48:19 [main] INFO  o.s.b.a.l.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-09-22 23:48:19 [main] ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Failed to bind properties under '' to ahm.dev.tasktrix.config.JwtProperties:
+
+    Reason: java.lang.IllegalArgumentException: Secret cannot be null
+
+Action:
+
+Update your application's configuration
+

@@ -1,62 +1,115 @@
 package ahm.dev.tasktrix.domain;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Entity
-@Table(name = "tasks")
-public class Task {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false, length = 200)
+@Table(name = "tasks", indexes = {
+        @Index(name = "idx_task_name", columnList = "name")
+})
+public class Task extends AbstractEntity {
+    @Column(nullable = false, length = 150)
+    @NotBlank(message = "Task title is required")
     private String title;
 
     @Column(length = 1000)
+    @Size(max = 1000, message = "Task content must not exceed 1000 characters")
     private String content;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    @Builder.Default
     private TaskStatus status = TaskStatus.NEW;
+
+
+    @Column(name = "due_date")
+    private LocalDateTime dueDate;
+
+    @Column(name = "completed_at")
+    private LocalDateTime completedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @JsonIgnore
     private User user;
 
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+    public Task() {}
 
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    public Task(String title, String content, User user) {
+        this.title = title;
+        this.content = content;
+        this.user = user;
+    }
 
-    // Business methods
-    public void markCompleted() {
+    public void markAsCompleted() {
         this.status = TaskStatus.COMPLETED;
+        this.completedAt = LocalDateTime.now();
     }
 
-    public void markInProgress() {
+    public void markAsPending() {
         this.status = TaskStatus.IN_PROGRESS;
+        this.completedAt = null;
     }
 
-    public boolean isCompleted() {
-        return this.status == TaskStatus.COMPLETED;
+    public boolean isOverdue() {
+        return this.dueDate != null && this.dueDate.isBefore(LocalDateTime.now()) && status != TaskStatus.COMPLETED;
     }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public TaskStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TaskStatus status) {
+        this.status = status;
+        if (status == TaskStatus.COMPLETED) {
+            this.completedAt = LocalDateTime.now();
+        } else {
+            this.completedAt = null;
+        }
+    }
+
+    public LocalDateTime getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDateTime dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public LocalDateTime getCompletedAt() {
+        return completedAt;
+    }
+
+    public void setCompletedAt(LocalDateTime completedAt) {
+        this.completedAt = completedAt;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
 }

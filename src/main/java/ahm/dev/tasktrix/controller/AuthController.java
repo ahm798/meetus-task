@@ -1,51 +1,64 @@
 package ahm.dev.tasktrix.controller;
 
-import ahm.dev.tasktrix.dto.AuthRequest;
-import ahm.dev.tasktrix.dto.AuthResponse;
-import ahm.dev.tasktrix.dto.UserForRegister;
-import ahm.dev.tasktrix.service.AuthService;
-import ahm.dev.tasktrix.service.UserService;
+import ahm.dev.tasktrix.dto.*;
+import ahm.dev.tasktrix.service.AuthServiceImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
-    private final AuthService authService;
-    private final UserService userService;
+
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(AuthController.class);
+
+    private final AuthServiceImpl authService;
+
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody UserForRegister userForRegister) {
-        userService.createUser(userForRegister);
-        return ResponseEntity.ok("User registered successfully");
+    public ResponseEntity<ApiResponse<Void>> register(@RequestBody @Valid SignupRequest signupRequest) {
+             authService.registerUser(signupRequest);
+            return ResponseEntity.status(HttpStatus.CREATED).body(
+                    ApiResponse.success("User registered successfully", null)
+            );
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest authRequest) {        try {
-            AuthResponse authResponse = authService.authenticate(authRequest);
-            return ResponseEntity.ok(authResponse);
-        } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
-
+    public ResponseEntity<ApiResponse<AuthResponse>> login(@RequestBody LoginRequest loginRequest) {
+        AuthResponse response=  authService.authenticateUser(loginRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ApiResponse.success("Authentication successful", response)
+        );
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<AuthResponse> refresh(@RequestBody String refreshRequest) {
-        try {
-            AuthResponse authResponse = authService.refresh(refreshRequest);
-            return ResponseEntity.ok(authResponse);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+    public ResponseEntity<AuthResponse> refresh(@RequestHeader("Authorization") String authHeader) {
+        String refreshToken = extractTokenFromHeader(authHeader);
+        AuthResponse response = authService.refreshToken(refreshToken);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<Void>> logout(
+            @RequestHeader("Authorization") String authHeader) {
+
+        String token = extractTokenFromHeader(authHeader);
+        authService.logout(token);
+
+        logger.info("User logged out successfully");
+
+        return ResponseEntity.ok(ApiResponse.success("Logout successful", null));
+    }
+
+
+    private String extractTokenFromHeader(String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Invalid authorization header format");
+        }
+        return authHeader.substring(7);
+    }
+
 }

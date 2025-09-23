@@ -1,14 +1,27 @@
 package ahm.dev.tasktrix.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
 
-@Data
-@AllArgsConstructor
-@Builder
-public class AuthResponse {
-    private String accessToken;
-    private String refreshToken;
-    private Long expiresIn;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import java.time.LocalDateTime;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public record AuthResponse(
+    String accessToken,
+
+    String refreshToken,
+
+    String tokenType,
+
+    UserInfo user,
+
+    LocalDateTime expiresAt
+) {
+    public record UserInfo(
+        Long id,
+        String username,
+        String email,
+        String firstName,
+        String lastName
+    ) {}
 }
